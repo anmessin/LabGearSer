@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "labgearser"
+version = "0.1.0"
+description = "Libreria per la comunicazione con strumentazione da banco."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pyvisa>=1.13",
+    "pyvisa-py>=0.7",
+    "pyserial>=3.5",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

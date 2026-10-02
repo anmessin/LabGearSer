@@ -1,0 +1,5 @@
+# Cartelle
+__pycache__
+*.egg-info
+# Datasheet (scaricabili dai siti dei produttori)
+docs/datasheet/
