@@ -1,36 +1,48 @@
-# labgearser
+# LabGearSer
 
-Libreria Python personale per il controllo remoto di strumentazione da banco via SCPI.
+Libreria Python (`labgearser`) per il controllo remoto di strumentazione da banco via SCPI.
 
 ## Strumenti supportati
 
-| Strumento | Tipo | Interfaccia | Backend richiesto |
-|---|---|---|---|
-| Agilent E3631A | Alimentatore DC triplo | RS-232 | `pyvisa-py` (incluso) |
-| RS-KEL103 (RS PRO) | Carico elettronico | USB-seriale | `pyvisa-py` (incluso) |
-| Keysight 34460A | Multimetro digitale | USBTMC | libreria VISA di sistema (vedi sotto) |
+| Strumento | Classe | Tipo | Interfaccia | Backend VISA |
+|---|---|---|---|---|
+| Agilent E3631A | `AgilentE3631A` | Alimentatore DC triplo | RS-232 | `pyvisa-py` (incluso) |
+| RS PRO RS-KEL103 | `RSProRSKEL103` | Carico elettronico DC | USB-seriale | `pyvisa-py` (incluso) |
+| Keysight 34460A | `Keysight34460A` | Multimetro digitale | USBTMC | libreria VISA di sistema (vedi sotto) |
 
 ## Requisiti
 
-- Python >= 3.10
-- Per il **Keysight 34460A**: serve una libreria VISA di sistema installata separatamente (NI-VISA o Keysight IO Libraries Suite).
+- **Keysight 34460A**: una libreria VISA di sistema installata separatamente.
 
 ## Installazione
 
-In locale, per sviluppo (modalità editable):
+### Sviluppo della libreria
 
-```
+```powershell
+git clone https://github.com/anmessin/LabGearSer.git
+cd LabGearSer
+python -m venv .venv
+.venv\Scripts\activate
 pip install -e .
 ```
 
-Da un altro progetto che vuole usare la libreria, direttamente da Git:
+## Struttura del progetto
 
 ```
-pip install git+https://github.com/<utente>/<repo>.git@<tag>
+src/labgearser/
+├── agilent_e3631a.py    # driver alimentatore Agilent E3631A
+├── rspro_rskel103.py    # driver carico elettronico RS-KEL103
+└── keysight_34460a.py   # driver multimetro Keysight 34460A
+docs/
+├── commits_convention.md
+└── datasheet.md         # elenco dei manuali dei produttori
+main.py                  # esempio d'uso
 ```
 
-(sostituire `<utente>/<repo>` con il percorso del repository, e `<tag>` con la versione desiderata, es. `v0.1.0`)
+## Datasheet
+
+L'elenco dei documenti e la cartella dove salvarli in locale sono in [docs/datasheet.md](docs/datasheet.md).
 
 ## Note
 
-- La libreria assume accesso esclusivo da remoto allo strumento per tutta la durata della connessione: nessun altro client o il pannello frontale non modifica lo stato nel frattempo. I driver si affidano a questa assunzione per mantenere in cache localmente alcuni stati (es. l'uscita selezionata sull'alimentatore), evitando interrogazioni ripetute dello strumento.
+- La libreria assume accesso esclusivo da remoto allo strumento per tutta la durata della connessione: né altri client né il pannello frontale devono modificarne lo stato nel frattempo. I driver si affidano a questa assunzione per tenere in cache alcuni stati (es. l'uscita selezionata sull'alimentatore), evitando interrogazioni ripetute dello strumento.
