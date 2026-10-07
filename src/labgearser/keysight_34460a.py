@@ -33,7 +33,7 @@ class Keysight34460A:
             )
         return idn
 
-    # --- Reset a stato noto (non svuota la coda errori) -----------------------
+    # --- Reset a stato noto (non svuota la coda errori) ----------------------
     def reset(self):
         self.write("*RST")
 
@@ -42,7 +42,7 @@ class Keysight34460A:
     # Tensione.
     # =========================================================================
 
-    # --- Misura tensione DC (rng=None: autorange) ------------------------------
+    # --- Misura tensione DC (rng=None: autorange) ----------------------------
     def measure_voltage(self, rng=None):
         if rng is None:
             cmd = "MEASure:VOLTage:DC?"
@@ -50,20 +50,16 @@ class Keysight34460A:
             cmd = f"MEASure:VOLTage:DC? {rng}"
         return float(self.query(cmd))
 
-    # --- Imposta il tempo di integrazione (NPLC) per la tensione DC -----------
-    def set_voltage_nplc(self, value):
-        self.write(f"VOLTage:DC:NPLC {value}")
-
-    # --- Legge il tempo di integrazione (NPLC) impostato per la tensione DC ---
-    def get_voltage_nplc(self):
-        return float(self.query("VOLTage:DC:NPLC?"))
+    # --- Legge il range attuale per la tensione DC (anche in autorange) ------
+    def get_voltage_range(self):
+        return float(self.query("VOLTage:DC:RANGe?"))
 
 
     # =========================================================================
     # Corrente.
     # =========================================================================
 
-    # --- Misura corrente DC (rng=None: autorange) -------------------------------
+    # --- Misura corrente DC (rng=None: autorange) ----------------------------
     def measure_current(self, rng=None):
         if rng is None:
             cmd = "MEASure:CURRent:DC?"
@@ -71,20 +67,16 @@ class Keysight34460A:
             cmd = f"MEASure:CURRent:DC? {rng}"
         return float(self.query(cmd))
 
-    # --- Imposta il tempo di integrazione (NPLC) per la corrente DC -----------
-    def set_current_nplc(self, value):
-        self.write(f"CURRent:DC:NPLC {value}")
-
-    # --- Legge il tempo di integrazione (NPLC) impostato per la corrente DC ---
-    def get_current_nplc(self):
-        return float(self.query("CURRent:DC:NPLC?"))
+    # --- Legge il range attuale per la corrente DC (anche in autorange) ------
+    def get_current_range(self):
+        return float(self.query("CURRent:DC:RANGe?"))
 
 
     # =========================================================================
     # Resistenza.
     # =========================================================================
 
-    # --- Misura resistenza a 2 fili (rng=None: autorange) -----------------------
+    # --- Misura resistenza a 2 fili (rng=None: autorange) --------------------
     def measure_resistance(self, rng=None):
         if rng is None:
             cmd = "MEASure:RESistance?"
@@ -92,7 +84,7 @@ class Keysight34460A:
             cmd = f"MEASure:RESistance? {rng}"
         return float(self.query(cmd))
 
-    # --- Misura resistenza a 4 fili, Kelvin (rng=None: autorange) ---------------
+    # --- Misura resistenza a 4 fili, Kelvin (rng=None: autorange) ------------
     def measure_resistance_4w(self, rng=None):
         if rng is None:
             cmd = "MEASure:FRESistance?"
@@ -100,24 +92,26 @@ class Keysight34460A:
             cmd = f"MEASure:FRESistance? {rng}"
         return float(self.query(cmd))
 
-    # --- Imposta il tempo di integrazione (NPLC) per la resistenza a 4 fili ---
-    def set_resistance_4w_nplc(self, value):
-        self.write(f"FRESistance:NPLC {value}")
+    # --- Legge il range attuale per la resistenza a 2 fili (anche in
+    #     autorange) ----------------------------------------------------------
+    def get_resistance_range(self):
+        return float(self.query("RESistance:RANGe?"))
 
-    # --- Legge il tempo di integrazione (NPLC) impostato per la resistenza a 4 fili ---
-    def get_resistance_4w_nplc(self):
-        return float(self.query("FRESistance:NPLC?"))
+    # --- Legge il range attuale per la resistenza a 4 fili (anche in
+    #     autorange) ----------------------------------------------------------
+    def get_resistance_4w_range(self):
+        return float(self.query("FRESistance:RANGe?"))
 
 
     # =========================================================================
     # Test di continuità e diodo.
     # =========================================================================
 
-    # --- Test di continuità (range fisso 1 kOhm, beep sotto i 10 Ohm) ---------
+    # --- Test di continuità (range fisso 1 kOhm, beep sotto i 10 Ohm) --------
     def measure_continuity(self):
         return float(self.query("MEASure:CONTinuity?"))
 
-    # --- Test diodo (sorgente fissa 1 mA, range 1 V) ---------------------------
+    # --- Test diodo (sorgente fissa 1 mA, range 1 V) -------------------------
     def measure_diode(self):
         return float(self.query("MEASure:DIODe?"))
 
