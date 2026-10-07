@@ -35,13 +35,13 @@ src/labgearser/
 └── keysight_34460a.py   # driver multimetro Keysight 34460A
 docs/
 ├── commits_convention.md
-└── datasheet.md         # elenco dei manuali dei produttori
+└── datasheets.md        # elenco dei manuali dei produttori
 main.py                  # esempio d'uso
 ```
 
 ## Datasheet
 
-L'elenco dei documenti e la cartella dove salvarli in locale sono in [docs/datasheet.md](docs/datasheet.md).
+L'elenco dei documenti e la cartella dove salvarli in locale sono in [docs/datasheets.md](docs/datasheets.md).
 
 ## Note
 
