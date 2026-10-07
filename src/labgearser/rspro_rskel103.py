@@ -30,7 +30,7 @@ class RSProRSKEL103:
     def query(self, cmd):
         return self.inst.query(cmd).strip()
 
-    # --- Return product information -----------------------------------------------------
+    # --- Identificazione -----------------------------------------------------
     def identify(self):
         idn = self.query("*IDN?")
         if not idn:
@@ -43,23 +43,23 @@ class RSProRSKEL103:
     # Gestione modalità carico.
     # =========================================================================
 
-    # --- Set the query of the device ON ---------------------------------------------------
+    # --- Attiva il carico (ingresso ON) --------------------------------------
     def load_on(self):
         self.write(":INPut ON")
 
-    # --- Set the query of the device OFF --------------------------------------------------
+    # --- Disattiva il carico (ingresso OFF) ----------------------------------
     def load_off(self):
         self.write(":INPut OFF")
 
-    # --- Set the mode of the device: voltage, current, resistor and power -----
+    # --- Imposta la modalità di carico (CC, CV, CW, CR) ----------------------
     def set_mode(self, mode):
         if mode not in self.MODES:
             raise ValueError(
-                f"Modalita' non valida: {mode!r}. Valori ammessi: {self.MODES}"
+                f"Modalità non valida: {mode!r}. Valori ammessi: {self.MODES}"
             )
         self.write(f":FUNCtion {mode}")
 
-    # --- Legge la modalita' di carico attuale -----------------------------------
+    # --- Legge la modalità di carico attuale ---------------------------------
     def get_mode(self):
         return self.query(":FUNCtion?")
 
@@ -68,22 +68,22 @@ class RSProRSKEL103:
     # Tensione.
     # =========================================================================
 
-    # --- Set CV voltage ----------------------------------------
+    # --- Imposta tensione (modalità CV) --------------------------------------
     def set_voltage(self, value):
         self.write(f":VOLTage {value}V")
 
-    # --- Query CV voltage ------------------------------------------------
+    # --- Legge tensione impostata (modalità CV) ------------------------------
     def get_voltage(self):
         return float(self.query(":VOLTage?").rstrip("V"))
 
-    # --- Query the max/min voltage of the device -----------------------------
+    # --- Legge la tensione massima/minima impostabile ------------------------
     def get_max_voltage(self):
         return float(self.query(":VOLTage:UPPer?").rstrip("V"))
 
     def get_min_voltage(self):
         return float(self.query(":VOLTage:LOWer?").rstrip("V"))
 
-    # --- Return the load voltage. Unit V ----------------------------------------------------
+    # --- Misura tensione reale (V) -------------------------------------------
     def measure_voltage(self):
         return float(self.query(":MEASure:VOLTage?").rstrip("V"))
 
@@ -92,22 +92,22 @@ class RSProRSKEL103:
     # Corrente.
     # =========================================================================
 
-    # --- Set the CC current ----------------------------------------
+    # --- Imposta corrente (modalità CC) --------------------------------------
     def set_current(self, value):
         self.write(f":CURRent {value}A")
 
-    # --- Query the CC current ------------------------------------------------
+    # --- Legge corrente impostata (modalità CC) ------------------------------
     def get_current(self):
         return float(self.query(":CURRent?").rstrip("A"))
 
-    # --- Query the max/min current --------------------------
+    # --- Legge la corrente massima/minima impostabile ------------------------
     def get_max_current(self):
         return float(self.query(":CURRent:UPPer?").rstrip("A"))
 
     def get_min_current(self):
         return float(self.query(":CURRent:LOWer?").rstrip("A"))
 
-    # --- Return the load current. Unit A ----------------------------------------------------
+    # --- Misura corrente reale (A) -------------------------------------------
     def measure_current(self):
         return float(self.query(":MEASure:CURRent?").rstrip("A"))
 
@@ -116,15 +116,15 @@ class RSProRSKEL103:
     # Resistenza.
     # =========================================================================
 
-    # --- Set the CR resistor ---------------------------------------
+    # --- Imposta resistenza (modalità CR) ------------------------------------
     def set_resistance(self, value):
         self.write(f":RESistance {value}OHM")
 
-    # --- Query the CR resistor -----------------------------------------------
+    # --- Legge resistenza impostata (modalità CR) ----------------------------
     def get_resistance(self):
         return float(self.query(":RESistance?").rstrip("OHM"))
 
-    # --- Query the max/min resistor of the device -------------------------
+    # --- Legge la resistenza massima/minima impostabile ----------------------
     def get_max_resistance(self):
         return float(self.query(":RESistance:UPPer?").rstrip("OHM"))
 
@@ -136,22 +136,22 @@ class RSProRSKEL103:
     # Potenza.
     # =========================================================================
 
-    # --- Set the CW power -----------------------------------------
+    # --- Imposta potenza (modalità CW) ---------------------------------------
     def set_power(self, value):
         self.write(f":POWer {value}W")
 
-    # --- Query the CW power --------------------------------------------------
+    # --- Legge potenza impostata (modalità CW) -------------------------------
     def get_power(self):
         return float(self.query(":POWer?").rstrip("W"))
 
-    # --- Query the max/min power of the device ----------------------------
+    # --- Legge la potenza massima/minima impostabile -------------------------
     def get_max_power(self):
         return float(self.query(":POWer:UPPer?").rstrip("W"))
 
     def get_min_power(self):
         return float(self.query(":POWer:LOWer?").rstrip("W"))
 
-    # --- Return the load power. Unit W -------------------------------------------------------
+    # --- Misura potenza reale (W) --------------------------------------------
     def measure_power(self):
         return float(self.query(":MEASure:POWer?").rstrip("W"))
 
