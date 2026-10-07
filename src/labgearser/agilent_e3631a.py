@@ -5,7 +5,7 @@ class AgilentE3631A:
     # --- Uscite disponibili --------------------------------------------------
     DC_OUTPUTS = ("P6V", "P25V", "N25V")
 
-    # --- Limiti rated per uscita (tensione/corrente) --------------------------
+    # --- Limiti nominali per uscita (tensione/corrente) ----------------------
     LIMITS = {
         "P6V":  {"voltage": (0, 6),   "current": (0, 5)},
         "P25V": {"voltage": (0, 25),  "current": (0, 1)},
@@ -49,9 +49,10 @@ class AgilentE3631A:
             )
         return idn
 
-    # --- Reset a stato noto (non svuota la coda errori) -----------------------
+    # --- Reset a stato noto (non svuota la coda errori) ----------------------
     def reset(self):
         self.write("*RST")
+        self._selected_output = "P6V"
 
 
     # =========================================================================
@@ -83,15 +84,15 @@ class AgilentE3631A:
     def is_output_on(self):
         return bool(int(self.query("OUTPut?")))
 
-    # --- Attiva il tracking simmetrico P25V/N25V ------------------------------
+    # --- Attiva il tracking simmetrico P25V/N25V -----------------------------
     def track_on(self):
         self.write("OUTPut:TRACk:STATe ON")
 
-    # --- Disattiva il tracking -------------------------------------------------
+    # --- Disattiva il tracking -----------------------------------------------
     def track_off(self):
         self.write("OUTPut:TRACk:STATe OFF")
 
-    # --- Stato del tracking ------------------------------------------------------
+    # --- Stato del tracking --------------------------------------------------
     def is_track_on(self):
         return bool(int(self.query("OUTPut:TRACk:STATe?")))
 
@@ -114,10 +115,9 @@ class AgilentE3631A:
     def get_voltage(self):
         return float(self.query("VOLTage?"))
 
-    # --- Misura tensione reale ------------------------------------------------
+    # --- Misura tensione reale -----------------------------------------------
     def measure_voltage(self):
-        output = self.get_selected_output()
-        return float(self.query(f"MEASure:VOLTage? {output}"))
+        return float(self.query("MEASure:VOLTage?"))
 
 
     # =========================================================================
@@ -140,8 +140,7 @@ class AgilentE3631A:
 
     # --- Misura corrente reale -----------------------------------------------
     def measure_current(self):
-        output = self.get_selected_output()
-        return float(self.query(f"MEASure:CURRent? {output}"))
+        return float(self.query("MEASure:CURRent?"))
 
 
     # =========================================================================
@@ -175,7 +174,7 @@ class AgilentE3631A:
     # Stato dello strumento.
     # =========================================================================
 
-    # --- Riproduce lo stato dello strumento -----------------
+    # --- Riproduce lo stato dello strumento ----------------------------------
     def get_status(self):
         state = {
             "output_on":       self.is_output_on(),
