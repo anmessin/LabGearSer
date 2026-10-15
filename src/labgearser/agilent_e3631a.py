@@ -16,6 +16,7 @@ class AgilentE3631A:
         rm = pyvisa.ResourceManager("@py")
         self.inst = rm.open_resource(
             resource,
+        
             baud_rate         = baudrate,
             data_bits         = 8,
             parity            = pyvisa.constants.Parity.none,
@@ -26,47 +27,59 @@ class AgilentE3631A:
             timeout           = timeout,
         )
         self.idn = self.identify()
-        self._selected_output = self.get_selected_output()
 
 
     # =========================================================================
-    # Comunicazione di base.
+    # COMUNICAZIONE DI BASE
     # =========================================================================
 
-    # --- Invio e lettura comandi ---------------------------------------------
+    # --- Invio comando -------------------------------------------------------
     def write(self, cmd):
         self.inst.write(cmd)
 
+    # --- Invio comando e lettura della risposta ------------------------------
     def query(self, cmd):
         return self.inst.query(cmd).strip()
+
+
+    # =========================================================================
+    # PRIMITIVE SCPI
+    # =========================================================================
+
+    # -------------------------------------------------------------------------
+    # Metodi di sistema.
+    # -------------------------------------------------------------------------
 
     # --- Identificazione -----------------------------------------------------
     def identify(self):
         idn = self.query("*IDN?")
-        if not idn:
-            raise RuntimeError(
-                f"Nessuna risposta da {self.inst.resource_name}."
-            )
+        self._check_idn(idn)
         return idn
 
-    # --- Reset a stato noto (non svuota la coda errori) ----------------------
+    # --- Reset dello strumento -----------------------------------------------
     def reset(self):
         self.write("*RST")
-        self._selected_output = "P6V"
 
+    # --- Legge il prossimo errore dalla FIFO ---------------------------------
+    def get_error(self):
+        return self.query("SYSTem:ERRor?")
 
-    # =========================================================================
+    # --- Passa in remoto (blocca il pannello frontale) -----------------------
+    def remote(self):
+        self.write("SYSTem:REMote")
+
+    # --- Rilascia in locale (riabilita il pannello frontale) -----------------
+    def local(self):
+        self.write("SYSTem:LOCal")
+
+    # -------------------------------------------------------------------------
     # Gestione uscite.
-    # =========================================================================
+    # -------------------------------------------------------------------------
 
     # --- Selezione uscita ----------------------------------------------------
     def select_output(self, output):
-        if output not in self.DC_OUTPUTS:
-            raise ValueError(
-                f"Uscita non valida: {output!r}. Valori ammessi: {self.DC_OUTPUTS}"
-            )
+        self._check_output(output)
         self.write(f"INSTrument:SELect {output}")
-        self._selected_output = output
 
     # --- Uscita selezionata --------------------------------------------------
     def get_selected_output(self):
@@ -96,73 +109,42 @@ class AgilentE3631A:
     def is_track_on(self):
         return bool(int(self.query("OUTPut:TRACk:STATe?")))
 
-
-    # =========================================================================
-    # Tensione.
-    # =========================================================================
+    # -------------------------------------------------------------------------
+    # Gestione Tensione.
+    # -------------------------------------------------------------------------
 
     # --- Imposta tensione ----------------------------------------------------
-    def set_voltage(self, value):
-        vmin, vmax = self.LIMITS[self._selected_output]["voltage"]
-        if not (vmin <= value <= vmax):
-            raise ValueError(
-                f"Tensione {value} V fuori range per {self._selected_output}: "
-                f"[{vmin},{vmax}] V"
-            )
-        self.write(f"VOLTage {value}")
+    def set_voltage(self, voltage):
+        self.write(f"VOLTage {voltage}")
 
-    # --- Legge tensione impostata --------------------------------------------
+    # --- Lettura di setpoint in tensione -------------------------------------
     def get_voltage(self):
         return float(self.query("VOLTage?"))
 
-    # --- Misura tensione reale -----------------------------------------------
+    # --- Readback in tensione ------------------------------------------------
     def measure_voltage(self):
         return float(self.query("MEASure:VOLTage?"))
 
+    # -------------------------------------------------------------------------
+    # Gestione Corrente.
+    # -------------------------------------------------------------------------
 
-    # =========================================================================
-    # Corrente.
-    # =========================================================================
+    # --- Imposta corrente ------------------------------------------------------
+    def set_current(self, current):
+        self.write(f"CURRent {current}")
 
-    # --- Imposta corrente ----------------------------------------------------
-    def set_current(self, value):
-        imin, imax = self.LIMITS[self._selected_output]["current"]
-        if not (imin <= value <= imax):
-            raise ValueError(
-                f"Corrente {value} A fuori range per {self._selected_output}: "
-                f"[{imin},{imax}] A"
-            )
-        self.write(f"CURRent {value}")
-
-    # --- Legge corrente impostata --------------------------------------------
+    # --- Lettura di setpoint in corrente -------------------------------------
     def get_current(self):
         return float(self.query("CURRent?"))
 
-    # --- Misura corrente reale -----------------------------------------------
+    # --- Readback in corrente ------------------------------------------------
     def measure_current(self):
         return float(self.query("MEASure:CURRent?"))
 
 
     # =========================================================================
-    # Gestione errori.
+    # COMPOSITI E LOGICHE
     # =========================================================================
-
-    # --- Legge il prossimo errore dalla coda (FIFO) --------------------------
-    def get_error(self):
-        return self.query("SYSTem:ERRor?")
-
-
-    # =========================================================================
-    # Controllo remoto/locale.
-    # =========================================================================
-
-    # --- Passa in remoto (blocca il pannello frontale) -----------------------
-    def remote(self):
-        self.write("SYSTem:REMote")
-
-    # --- Rilascia in locale (riabilita il pannello frontale) -----------------
-    def local(self):
-        self.write("SYSTem:LOCal")
 
     # --- Chiude la comunicazione ---------------------------------------------
     def close(self):
@@ -171,26 +153,26 @@ class AgilentE3631A:
 
 
     # =========================================================================
-    # Stato dello strumento.
+    # VERIFICHE E VALIDAZIONI (metodi interni)
     # =========================================================================
 
-    # --- Riproduce lo stato dello strumento ----------------------------------
-    def get_status(self):
-        state = {
-            "output_on":       self.is_output_on(),
-            "track_on":        self.is_track_on(),
-            "selected_output": self.get_selected_output(),
-            "error":           self.get_error(),
-        }
-        for ch in self.DC_OUTPUTS:
-            response = self.query(f"APPLy? {ch}").strip('"')
-            voltage, current = response.split(",")
-            state[ch] = {"voltage": float(voltage), "current": float(current)}
-        return state
+    # --- Verifica dello stato di identificazione -----------------------------
+    def _check_idn(self, idn):
+        if not idn:
+            raise RuntimeError(
+                f"Nessuna risposta da {self.inst.resource_name}."
+            )
+
+    # --- Validazione dell'uscita selezionata ---------------------------------
+    def _check_output(self, output):
+        if output not in self.DC_OUTPUTS:
+            raise ValueError(
+                f"Uscita non valida: {output}. ValorI ammessi: {self.DC_OUTPUTS}."
+            )
 
 
     # =========================================================================
-    # Context manager.
+    # CONTEXT MANAGER
     # =========================================================================
 
     # --- Ingresso nel blocco `with` ------------------------------------------
