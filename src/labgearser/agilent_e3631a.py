@@ -16,7 +16,6 @@ class AgilentE3631A:
         rm = pyvisa.ResourceManager("@py")
         self.inst = rm.open_resource(
             resource,
-        
             baud_rate         = baudrate,
             data_bits         = 8,
             parity            = pyvisa.constants.Parity.none,
@@ -145,7 +144,7 @@ class AgilentE3631A:
     # Gestione Corrente.
     # -------------------------------------------------------------------------
 
-    # --- Imposta corrente ------------------------------------------------------
+    # --- Imposta corrente ----------------------------------------------------
     def set_current(self, current):
         self.write(f"CURRent {current}")
 
@@ -169,7 +168,7 @@ class AgilentE3631A:
 
 
     # =========================================================================
-    # VERIFICHE E VALIDAZIONI (metodi interni)
+    # METODI INTERNI
     # =========================================================================
 
     # --- Verifica dello stato di identificazione -----------------------------
@@ -183,7 +182,7 @@ class AgilentE3631A:
     def _check_output(self, output):
         if output not in self.DC_OUTPUTS:
             raise ValueError(
-                f"Uscita non valida: {output}. ValorI ammessi: {self.DC_OUTPUTS}."
+                f"Uscita non valida: {output}. Valori ammessi: {self.DC_OUTPUTS}."
             )
 
 
