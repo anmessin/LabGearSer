@@ -76,6 +76,18 @@ class AgilentE3631A:
     def beep(self):
         self.write("SYSTem:BEEPer")
 
+    # --- Abilita il BEEP!!! --------------------------------------------------
+    def beeper_on(self):
+        self.write("SYSTem:BEEPer:STATe ON")
+
+    # --- Disabilita il BEEP!!! -----------------------------------------------
+    def beeper_off(self):
+        self.write("SYSTem:BEEPer:STATe OFF")
+
+    # --- Stato del BEEP!!! ---------------------------------------------------
+    def is_beeper_on(self):
+        return bool(int(self.query("SYSTem:BEEPer:STATe?")))
+
     # -------------------------------------------------------------------------
     # Gestione uscite.
     # -------------------------------------------------------------------------
