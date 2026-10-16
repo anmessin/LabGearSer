@@ -72,6 +72,10 @@ class AgilentE3631A:
     def local(self):
         self.write("SYSTem:LOCal")
 
+    # --- Fa fare BEEP allo strumento!!! --------------------------------------
+    def beep(self):
+        self.write("SYSTem:BEEPer")
+
     # -------------------------------------------------------------------------
     # Gestione uscite.
     # -------------------------------------------------------------------------
