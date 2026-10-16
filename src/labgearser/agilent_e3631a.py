@@ -85,8 +85,8 @@ class AgilentE3631A:
         self.write("SYSTem:BEEPer:STATe OFF")
 
     # --- Stato del BEEP!!! ---------------------------------------------------
-    def is_beeper_on(self):
-        return bool(int(self.query("SYSTem:BEEPer:STATe?")))
+    def get_beeper_state(self):
+        return self.query("SYSTem:BEEPer:STATe?")
 
     # -------------------------------------------------------------------------
     # Gestione uscite.
@@ -110,8 +110,8 @@ class AgilentE3631A:
         self.write("OUTPut OFF")
 
     # --- Stato uscita --------------------------------------------------------
-    def is_output_on(self):
-        return bool(int(self.query("OUTPut?")))
+    def get_output_state(self):
+        return self.query("OUTPut?")
 
     # --- Attiva il tracking simmetrico P25V/N25V -----------------------------
     def track_on(self):
@@ -122,8 +122,8 @@ class AgilentE3631A:
         self.write("OUTPut:TRACk:STATe OFF")
 
     # --- Stato del tracking --------------------------------------------------
-    def is_track_on(self):
-        return bool(int(self.query("OUTPut:TRACk:STATe?")))
+    def get_track_state(self):
+        return self.query("OUTPut:TRACk:STATe?")
 
     # -------------------------------------------------------------------------
     # Gestione Tensione.
@@ -135,11 +135,11 @@ class AgilentE3631A:
 
     # --- Lettura di setpoint in tensione -------------------------------------
     def get_voltage(self):
-        return float(self.query("VOLTage?"))
+        return self.query("VOLTage?")
 
     # --- Readback in tensione ------------------------------------------------
     def measure_voltage(self):
-        return float(self.query("MEASure:VOLTage?"))
+        return self.query("MEASure:VOLTage?")
 
     # -------------------------------------------------------------------------
     # Gestione Corrente.
@@ -151,11 +151,11 @@ class AgilentE3631A:
 
     # --- Lettura di setpoint in corrente -------------------------------------
     def get_current(self):
-        return float(self.query("CURRent?"))
+        return self.query("CURRent?")
 
     # --- Readback in corrente ------------------------------------------------
     def measure_current(self):
-        return float(self.query("MEASure:CURRent?"))
+        return self.query("MEASure:CURRent?")
 
 
     # =========================================================================
