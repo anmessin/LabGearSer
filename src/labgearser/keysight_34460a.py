@@ -14,119 +14,123 @@ class Keysight34460A:
 
 
     # =========================================================================
-    # Comunicazione di base.
+    # COMUNICAZIONE DI BASE
     # =========================================================================
 
-    # --- Invio e lettura comandi ---------------------------------------------
+    # --- Invio comando -------------------------------------------------------
     def write(self, cmd):
         self.inst.write(cmd)
 
+    # --- Invio comando e lettura della risposta ------------------------------
     def query(self, cmd):
         return self.inst.query(cmd).strip()
+
+
+    # =========================================================================
+    # PRIMITIVE SCPI
+    # =========================================================================
+
+    # -------------------------------------------------------------------------
+    # Metodi di sistema.
+    # -------------------------------------------------------------------------
 
     # --- Identificazione -----------------------------------------------------
     def identify(self):
         idn = self.query("*IDN?")
-        if not idn:
-            raise RuntimeError(
-                f"Nessuna risposta da {self.inst.resource_name}."
-            )
+        self._check_idn(idn)
         return idn
 
-    # --- Reset a stato noto (non svuota la coda errori) ----------------------
+    # --- Reset dello strumento -----------------------------------------------
     def reset(self):
         self.write("*RST")
 
-
-    # =========================================================================
-    # Tensione.
-    # =========================================================================
-
-    # --- Misura tensione DC (rng=None: autorange) ----------------------------
-    def measure_voltage(self, rng=None):
-        if rng is None:
-            cmd = "MEASure:VOLTage:DC?"
-        else:
-            cmd = f"MEASure:VOLTage:DC? {rng}"
-        return float(self.query(cmd))
-
-    # --- Legge il range attuale per la tensione DC (anche in autorange) ------
-    def get_voltage_range(self):
-        return float(self.query("VOLTage:DC:RANGe?"))
-
-
-    # =========================================================================
-    # Corrente.
-    # =========================================================================
-
-    # --- Misura corrente DC (rng=None: autorange) ----------------------------
-    def measure_current(self, rng=None):
-        if rng is None:
-            cmd = "MEASure:CURRent:DC?"
-        else:
-            cmd = f"MEASure:CURRent:DC? {rng}"
-        return float(self.query(cmd))
-
-    # --- Legge il range attuale per la corrente DC (anche in autorange) ------
-    def get_current_range(self):
-        return float(self.query("CURRent:DC:RANGe?"))
-
-
-    # =========================================================================
-    # Resistenza.
-    # =========================================================================
-
-    # --- Misura resistenza a 2 fili (rng=None: autorange) --------------------
-    def measure_resistance(self, rng=None):
-        if rng is None:
-            cmd = "MEASure:RESistance?"
-        else:
-            cmd = f"MEASure:RESistance? {rng}"
-        return float(self.query(cmd))
-
-    # --- Misura resistenza a 4 fili, Kelvin (rng=None: autorange) ------------
-    def measure_resistance_4w(self, rng=None):
-        if rng is None:
-            cmd = "MEASure:FRESistance?"
-        else:
-            cmd = f"MEASure:FRESistance? {rng}"
-        return float(self.query(cmd))
-
-    # --- Legge il range attuale per la resistenza a 2 fili (anche in
-    #     autorange) ----------------------------------------------------------
-    def get_resistance_range(self):
-        return float(self.query("RESistance:RANGe?"))
-
-    # --- Legge il range attuale per la resistenza a 4 fili (anche in
-    #     autorange) ----------------------------------------------------------
-    def get_resistance_4w_range(self):
-        return float(self.query("FRESistance:RANGe?"))
-
-
-    # =========================================================================
-    # Test di continuità e diodo.
-    # =========================================================================
-
-    # --- Test di continuità (range fisso 1 kOhm, beep sotto i 10 Ohm) --------
-    def measure_continuity(self):
-        return float(self.query("MEASure:CONTinuity?"))
-
-    # --- Test diodo (sorgente fissa 1 mA, range 1 V) -------------------------
-    def measure_diode(self):
-        return float(self.query("MEASure:DIODe?"))
-
-
-    # =========================================================================
-    # Gestione errori.
-    # =========================================================================
-
-    # --- Legge il prossimo errore dalla coda (FIFO) --------------------------
+    # --- Legge il prossimo errore dalla FIFO ---------------------------------
     def get_error(self):
         return self.query("SYSTem:ERRor?")
 
+    # --- Fa fare BEEP allo strumento!!! --------------------------------------
+    def beep(self):
+        self.write("SYSTem:BEEPer")
+
+    # --- Abilita il BEEP!!! --------------------------------------------------
+    def beeper_on(self):
+        self.write("SYSTem:BEEPer:STATe ON")
+
+    # --- Disabilita il BEEP!!! -----------------------------------------------
+    def beeper_off(self):
+        self.write("SYSTem:BEEPer:STATe OFF")
+
+    # --- Stato del BEEP!!! ---------------------------------------------------
+    def get_beeper_state(self):
+        return self.query("SYSTem:BEEPer:STATe?")
+
+    # -------------------------------------------------------------------------
+    # Gestione Tensione.
+    # -------------------------------------------------------------------------
+
+    # --- Misura tensione DC --------------------------------------------------
+    def measure_voltage(self, rng=None, res=None):
+        self._check_resolution(rng, res)
+        cmd = self._build_measure_cmd("MEASure:VOLTage:DC?", rng, res)
+        return self.query(cmd)
+
+    # --- Legge il range attuale per la tensione DC ---------------------------
+    def get_voltage_range(self):
+        return self.query("VOLTage:DC:RANGe?")
+
+    # -------------------------------------------------------------------------
+    # Gestione Corrente.
+    # -------------------------------------------------------------------------
+
+    # --- Misura corrente DC --------------------------------------------------
+    def measure_current(self, rng=None, res=None):
+        self._check_resolution(rng, res)
+        cmd = self._build_measure_cmd("MEASure:CURRent:DC?", rng, res)
+        return self.query(cmd)
+
+    # --- Legge il range attuale per la corrente DC ---------------------------
+    def get_current_range(self):
+        return self.query("CURRent:DC:RANGe?")
+
+    # -------------------------------------------------------------------------
+    # Gestione Resistenza.
+    # -------------------------------------------------------------------------
+
+    # --- Misura resistenza a 2 fili ------------------------------------------
+    def measure_resistance(self, rng=None, res=None):
+        self._check_resolution(rng, res)
+        cmd = self._build_measure_cmd("MEASure:RESistance?", rng, res)
+        return self.query(cmd)
+
+    # --- Misura resistenza a 4 fili, Kelvin ----------------------------------
+    def measure_resistance_4w(self, rng=None, res=None):
+        self._check_resolution(rng, res)
+        cmd = self._build_measure_cmd("MEASure:FRESistance?", rng, res)
+        return self.query(cmd)
+
+    # --- Legge il range attuale per la resistenza a 2 fili -------------------
+    def get_resistance_range(self):
+        return self.query("RESistance:RANGe?")
+
+    # --- Legge il range attuale per la resistenza a 4 fili -------------------
+    def get_resistance_4w_range(self):
+        return self.query("FRESistance:RANGe?")
+
+    # -------------------------------------------------------------------------
+    # Test di continuità e diodo.
+    # -------------------------------------------------------------------------
+
+    # --- Test di continuità (range fisso 1 kOhm, beep sotto i 10 Ohm) --------
+    def measure_continuity(self):
+        return self.query("MEASure:CONTinuity?")
+
+    # --- Test diodo (sorgente fissa 1 mA, range 1 V) -------------------------
+    def measure_diode(self):
+        return self.query("MEASure:DIODe?")
+
 
     # =========================================================================
-    # Chiusura comunicazione.
+    # COMPOSITI E LOGICHE
     # =========================================================================
 
     # --- Chiude la comunicazione ---------------------------------------------
@@ -135,7 +139,31 @@ class Keysight34460A:
 
 
     # =========================================================================
-    # Context manager.
+    # METODI INTERNI
+    # =========================================================================
+
+    # --- Verifica dello stato di identificazione -----------------------------
+    def _check_idn(self, idn):
+        if not idn:
+            raise RuntimeError(
+                f"Nessuna risposta da {self.inst.resource_name}."
+            )
+
+    # --- Validazione dei parametri rng e res per measure ---------------------
+    def _check_resolution(self, rng, res):
+        if rng is None and res is not None:
+            raise ValueError("Non si può dare res senza rng.")
+
+    # --- Costruisce il comando per i metodi measure_* con rng e res ----------
+    def _build_measure_cmd(self, header, *params):
+        params = [str(p) for p in params if p is not None]
+        if not params:
+            return header
+        return f"{header} {','.join(params)}"
+
+
+    # =========================================================================
+    # CONTEXT MANAGER
     # =========================================================================
 
     # --- Ingresso nel blocco `with` ------------------------------------------
