@@ -207,16 +207,3 @@ class RSProRSKEL103:
             raise ValueError(
                 f"Modalità non valida: {mode}. Valori ammessi: {self.MODES}."
             )
-
-
-    # =========================================================================
-    # CONTEXT MANAGER
-    # =========================================================================
-
-    # --- Ingresso nel blocco `with` ------------------------------------------
-    def __enter__(self):
-        return self
-
-    # --- Uscita dal blocco `with`: rilascia sempre lo strumento --------------
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.close()
