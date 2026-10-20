@@ -21,21 +21,12 @@ DMM_TIMEOUT = 5000
 
 if __name__ == "__main__":
 
-    with ExitStack() as stack:
+    psu = AgilentE3631A(PSU_PORT, PSU_BAUDRATE, PSU_TIMEOUT)
+    eld = RSProRSKEL103(ELD_PORT, ELD_BAUDRATE, ELD_TIMEOUT)
+    dmm = Keysight34460A(DMM_PORT_1, DMM_TIMEOUT)
+    # dmm_2 = Keysight34460A(DMM_PORT_2, DMM_TIMEOUT)
 
-        psu = AgilentE3631A(PSU_PORT, PSU_BAUDRATE, PSU_TIMEOUT)
-        stack.callback(psu.close)
-
-        # eld = RSProRSKEL103(ELD_PORT, ELD_BAUDRATE, ELD_TIMEOUT)
-        # stack.callback(eld.close)
-
-        dmm_1 = Keysight34460A(DMM_PORT_1, DMM_TIMEOUT)
-        stack.callback(dmm_1.close)
-
-        # dmm_2 = Keysight34460A(DMM_PORT_2, DMM_TIMEOUT)
-        # stack.callback(dmm_2.close)
-
-        print(f"Connesso: {psu.idn}")
-        # print(f"Connesso: {eld.idn}")
-        print(f"Connesso: {dmm_1.idn}")
-        # print(f"Connesso: {dmm_2.idn}")
+    print(f"Connesso: {psu.idn}")
+    print(f"Connesso: {eld.idn}")
+    print(f"Connesso: {dmm.idn}")
+    # print(f"Connesso: {dmm_2.idn}")
