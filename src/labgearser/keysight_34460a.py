@@ -2,6 +2,8 @@ import pyvisa
 
 class Keysight34460A:
 
+    UNIT_TEMP = ("C", "K", "F")
+
     def __init__(self, resource, timeout=1000):
         rm = pyvisa.ResourceManager()
         self.inst = rm.open_resource(
@@ -128,6 +130,23 @@ class Keysight34460A:
     def measure_diode(self):
         return self.query("MEASure:DIODe?")
 
+    # -------------------------------------------------------------------------
+    # Gestione Temperatura.
+    # -------------------------------------------------------------------------
+
+    # --- Imposta l'unità della temperatura -----------------------------------
+    def set_unit_temperature(self, unit):
+        self._check_unit_temperature(unit)
+        self.write(f"UNIT:TEMPerature {unit}")
+
+    # --- Legge l'unità della temperatura impostata ---------------------------
+    def get_unit_temperature(self):
+        return self.query(f"UNIT:TEMPerature?")
+
+    # --- Misura temperatura con PT100 a 2 fili -------------------------------
+    def measure_temperature(self):
+        return self.query("MEASure:TEMPerature? RTD,85")
+
 
     # =========================================================================
     # COMPOSITI E LOGICHE
@@ -160,3 +179,10 @@ class Keysight34460A:
         if not params:
             return header
         return f"{header} {','.join(params)}"
+
+    # --- Validazione dell'unità di temperatura -------------------------------
+    def _check_temperature_unit(self, unit):
+        if unit not in self.UNIT_TEMP:
+            raise ValueError(
+                f"Unità non valida: {unit}. Valori ammessi: {self.UNIT_TEMP}."
+            )
