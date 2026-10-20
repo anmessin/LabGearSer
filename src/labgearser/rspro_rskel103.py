@@ -47,18 +47,6 @@ class RSProRSKEL103:
         self._check_idn(idn)
         return idn
 
-    # --- Abilita il BEEP!!! --------------------------------------------------
-    def beeper_on(self):
-        self.write(":SYSTem:BEEP ON")
-
-    # --- Disabilita il BEEP!!! -----------------------------------------------
-    def beeper_off(self):
-        self.write(":SYSTem:BEEP OFF")
-
-    # --- Stato del BEEP!!! ---------------------------------------------------
-    def get_beeper_state(self):
-        return self.query(":SYSTem:BEEP?")
-
     # --- Stato del dispositivo (buzzer, baud rate, ...) ----------------------
     def get_status(self):
         return self.query(":STATus?")
