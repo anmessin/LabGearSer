@@ -63,14 +63,6 @@ class AgilentE3631A:
     def get_error(self):
         return self.query("SYSTem:ERRor?")
 
-    # --- Passa in remoto (blocca il pannello frontale) -----------------------
-    def remote(self):
-        self.write("SYSTem:REMote")
-
-    # --- Rilascia in locale (riabilita il pannello frontale) -----------------
-    def local(self):
-        self.write("SYSTem:LOCal")
-
     # --- Fa fare BEEP allo strumento!!! --------------------------------------
     def beep(self):
         self.write("SYSTem:BEEPer")
@@ -86,6 +78,14 @@ class AgilentE3631A:
     # --- Stato del BEEP!!! ---------------------------------------------------
     def get_beeper_state(self):
         return self.query("SYSTem:BEEPer:STATe?")
+
+    # --- Passa in remoto (blocca il pannello frontale) -----------------------
+    def remote(self):
+        self.write("SYSTem:REMote")
+
+    # --- Rilascia in locale (riabilita il pannello frontale) -----------------
+    def local(self):
+        self.write("SYSTem:LOCal")
 
     # -------------------------------------------------------------------------
     # Gestione uscite.
