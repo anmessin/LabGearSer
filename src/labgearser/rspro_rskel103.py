@@ -86,19 +86,19 @@ class RSProRSKEL103:
 
     # --- Legge tensione impostata (modalità CV) ------------------------------
     def get_voltage(self):
-        return self.query(":VOLTage?")
+        return self._to_float(self.query(":VOLTage?"), "V")
 
     # --- Legge la tensione massima impostabile -------------------------------
     def get_max_voltage(self):
-        return self.query(":VOLTage:UPPer?")
+        return self._to_float(self.query(":VOLTage:UPPer?"), "V")
 
     # --- Legge la tensione minima impostabile --------------------------------
     def get_min_voltage(self):
-        return self.query(":VOLTage:LOWer?")
+        return self._to_float(self.query(":VOLTage:LOWer?"), "V")
 
     # --- Misura tensione reale -----------------------------------------------
     def measure_voltage(self):
-        return self.query(":MEASure:VOLTage?")
+        return self._to_float(self.query(":MEASure:VOLTage?"), "V")
 
     # -------------------------------------------------------------------------
     # Gestione Corrente.
@@ -110,19 +110,19 @@ class RSProRSKEL103:
 
     # --- Legge corrente impostata (modalità CC) ------------------------------
     def get_current(self):
-        return self.query(":CURRent?")
+        return self._to_float(self.query(":CURRent?"), "A")
 
     # --- Legge la corrente massima impostabile -------------------------------
     def get_max_current(self):
-        return self.query(":CURRent:UPPer?")
+        return self._to_float(self.query(":CURRent:UPPer?"), "A")
 
     # --- Legge la corrente minima impostabile --------------------------------
     def get_min_current(self):
-        return self.query(":CURRent:LOWer?")
+        return self._to_float(self.query(":CURRent:LOWer?"), "A")
 
     # --- Misura corrente reale -----------------------------------------------
     def measure_current(self):
-        return self.query(":MEASure:CURRent?")
+        return self._to_float(self.query(":MEASure:CURRent?"), "A")
 
     # -------------------------------------------------------------------------
     # Gestione Resistenza.
@@ -134,15 +134,15 @@ class RSProRSKEL103:
 
     # --- Legge resistenza impostata (modalità CR) ----------------------------
     def get_resistance(self):
-        return self.query(":RESistance?")
+        return self._to_float(self.query(":RESistance?"), "OHM")
 
     # --- Legge la resistenza massima impostabile -----------------------------
     def get_max_resistance(self):
-        return self.query(":RESistance:UPPer?")
+        return self._to_float(self.query(":RESistance:UPPer?"), "OHM")
 
     # --- Legge la resistenza minima impostabile ------------------------------
     def get_min_resistance(self):
-        return self.query(":RESistance:LOWer?")
+        return self._to_float(self.query(":RESistance:LOWer?"), "OHM")
 
     # -------------------------------------------------------------------------
     # Gestione Potenza.
@@ -154,19 +154,19 @@ class RSProRSKEL103:
 
     # --- Legge potenza impostata (modalità CW) -------------------------------
     def get_power(self):
-        return self.query(":POWer?")
+        return self._to_float(self.query(":POWer?"), "W")
 
     # --- Legge la potenza massima impostabile --------------------------------
     def get_max_power(self):
-        return self.query(":POWer:UPPer?")
+        return self._to_float(self.query(":POWer:UPPer?"), "W")
 
     # --- Legge la potenza minima impostabile ---------------------------------
     def get_min_power(self):
-        return self.query(":POWer:LOWer?")
+        return self._to_float(self.query(":POWer:LOWer?"), "W")
 
     # --- Misura potenza reale ------------------------------------------------
     def measure_power(self):
-        return self.query(":MEASure:POWer?")
+        return self._to_float(self.query(":MEASure:POWer?"), "W")
 
 
     # =========================================================================
@@ -195,6 +195,10 @@ class RSProRSKEL103:
             raise ValueError(
                 f"Modalità non valida: {mode}. Valori ammessi: {self.MODES}."
             )
+
+    # --- Converte una risposta con unità in float ----------------------------
+    def _to_float(self, response, unit):
+        return float(response.rstrip(unit))
 
 
     # =========================================================================
