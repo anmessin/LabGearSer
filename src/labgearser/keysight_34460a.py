@@ -64,7 +64,7 @@ class Keysight34460A:
 
     # --- Stato del BEEP!!! ---------------------------------------------------
     def get_beeper_state(self):
-        return self.query("SYSTem:BEEPer:STATe?")
+        return int(self.query("SYSTem:BEEPer:STATe?"))
 
     # -------------------------------------------------------------------------
     # Gestione Tensione.
@@ -74,11 +74,11 @@ class Keysight34460A:
     def measure_voltage(self, rng=None, res=None):
         self._check_resolution(rng, res)
         cmd = self._build_measure_cmd("MEASure:VOLTage:DC?", rng, res)
-        return self.query(cmd)
+        return float(self.query(cmd))
 
     # --- Legge il range attuale per la tensione DC ---------------------------
     def get_voltage_range(self):
-        return self.query("VOLTage:DC:RANGe?")
+        return float(self.query("VOLTage:DC:RANGe?"))
 
     # -------------------------------------------------------------------------
     # Gestione Corrente.
@@ -88,11 +88,11 @@ class Keysight34460A:
     def measure_current(self, rng=None, res=None):
         self._check_resolution(rng, res)
         cmd = self._build_measure_cmd("MEASure:CURRent:DC?", rng, res)
-        return self.query(cmd)
+        return float(self.query(cmd))
 
     # --- Legge il range attuale per la corrente DC ---------------------------
     def get_current_range(self):
-        return self.query("CURRent:DC:RANGe?")
+        return float(self.query("CURRent:DC:RANGe?"))
 
     # -------------------------------------------------------------------------
     # Gestione Resistenza.
@@ -102,21 +102,21 @@ class Keysight34460A:
     def measure_resistance(self, rng=None, res=None):
         self._check_resolution(rng, res)
         cmd = self._build_measure_cmd("MEASure:RESistance?", rng, res)
-        return self.query(cmd)
+        return float(self.query(cmd))
 
     # --- Misura resistenza a 4 fili, Kelvin ----------------------------------
     def measure_resistance_4w(self, rng=None, res=None):
         self._check_resolution(rng, res)
         cmd = self._build_measure_cmd("MEASure:FRESistance?", rng, res)
-        return self.query(cmd)
+        return float(self.query(cmd))
 
     # --- Legge il range attuale per la resistenza a 2 fili -------------------
     def get_resistance_range(self):
-        return self.query("RESistance:RANGe?")
+        return float(self.query("RESistance:RANGe?"))
 
     # --- Legge il range attuale per la resistenza a 4 fili -------------------
     def get_resistance_4w_range(self):
-        return self.query("FRESistance:RANGe?")
+        return float(self.query("FRESistance:RANGe?"))
 
     # -------------------------------------------------------------------------
     # Test di continuità e diodo.
@@ -124,11 +124,11 @@ class Keysight34460A:
 
     # --- Test di continuità (range fisso 1 kOhm, beep sotto i 10 Ohm) --------
     def measure_continuity(self):
-        return self.query("MEASure:CONTinuity?")
+        return float(self.query("MEASure:CONTinuity?"))
 
     # --- Test diodo (sorgente fissa 1 mA, range 1 V) -------------------------
     def measure_diode(self):
-        return self.query("MEASure:DIODe?")
+        return float(self.query("MEASure:DIODe?"))
 
     # -------------------------------------------------------------------------
     # Gestione Temperatura.
@@ -145,7 +145,7 @@ class Keysight34460A:
 
     # --- Misura temperatura con PT100 a 2 fili -------------------------------
     def measure_temperature(self):
-        return self.query("MEASure:TEMPerature? RTD,85")
+        return float(self.query("MEASure:TEMPerature? RTD,85"))
 
 
     # =========================================================================
