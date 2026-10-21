@@ -1,5 +1,3 @@
-from contextlib import ExitStack
-
 from labgearser import AgilentE3631A
 from labgearser import RSProRSKEL103
 from labgearser import Keysight34460A
