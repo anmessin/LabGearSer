@@ -184,3 +184,16 @@ class AgilentE3631A:
             raise ValueError(
                 f"Uscita non valida: {output}. Valori ammessi: {self.DC_OUTPUTS}."
             )
+
+
+    # =========================================================================
+    # CONTEXT MANAGER
+    # =========================================================================
+
+    # --- Ingresso nel blocco `with` ------------------------------------------
+    def __enter__(self):
+        return self
+
+    # --- Uscita dal blocco `with`: rilascia sempre lo strumento --------------
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()

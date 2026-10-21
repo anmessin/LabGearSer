@@ -186,3 +186,16 @@ class Keysight34460A:
             raise ValueError(
                 f"Unità non valida: {unit}. Valori ammessi: {self.UNIT_TEMP}."
             )
+
+
+    # =========================================================================
+    # CONTEXT MANAGER
+    # =========================================================================
+
+    # --- Ingresso nel blocco `with` ------------------------------------------
+    def __enter__(self):
+        return self
+
+    # --- Uscita dal blocco `with`: rilascia sempre lo strumento --------------
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
