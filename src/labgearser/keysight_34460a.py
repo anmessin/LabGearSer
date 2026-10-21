@@ -136,7 +136,7 @@ class Keysight34460A:
 
     # --- Imposta l'unità della temperatura -----------------------------------
     def set_unit_temperature(self, unit):
-        self._check_unit_temperature(unit)
+        self._check_temperature_unit(unit)
         self.write(f"UNIT:TEMPerature {unit}")
 
     # --- Legge l'unità della temperatura impostata ---------------------------
