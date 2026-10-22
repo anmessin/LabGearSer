@@ -156,6 +156,22 @@ class AgilentE3631A:
     def measure_current(self):
         return float(self.query("MEASure:CURRent?"))
 
+    # -------------------------------------------------------------------------
+    # Impostazione combinata (APPLy).
+    # -------------------------------------------------------------------------
+
+    # --- Imposta tensione e corrente di un'uscita ----------------------------
+    def apply(self, output, voltage, current):
+        self._check_output(output)
+        self._check_limit(output, "voltage", voltage)
+        self._check_limit(output, "current", current)
+        self.write(f"APPLy {output},{voltage},{current}")
+
+    # --- Lettura di setpoint in tensione e corrente di un'uscita -------------
+    def get_apply(self, output):
+        self._check_output(output)
+        voltage, current = self.query(f"APPLy? {output}").strip('"').split(",")
+        return float(voltage), float(current)
 
     # =========================================================================
     # COMPOSITI E LOGICHE
@@ -183,6 +199,14 @@ class AgilentE3631A:
         if output not in self.DC_OUTPUTS:
             raise ValueError(
                 f"Uscita non valida: {output}. Valori ammessi: {self.DC_OUTPUTS}."
+            )
+
+    # --- Validazione di un setpoint rispetto ai limiti nominali --------------
+    def _check_limit(self, output, quantity, value):
+        low, high = self.LIMITS[output][quantity]
+        if not low <= value <= high:
+            raise ValueError(
+                f"{quantity} fuori range per {output}: {value}. Valori ammessi: [{low}, {high}]."
             )
 
 
