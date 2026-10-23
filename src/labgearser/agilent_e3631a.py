@@ -25,6 +25,7 @@ class AgilentE3631A:
             write_termination = "\n",
             timeout           = timeout,
         )
+        self.remote()
         self.idn = self.identify()
 
 
@@ -176,6 +177,15 @@ class AgilentE3631A:
     # =========================================================================
     # COMPOSITI E LOGICHE
     # =========================================================================
+
+    # --- Porta lo strumento in uno stato noto --------------------------------
+    def initialize(self):
+        self.remote()
+        self.reset()
+        self.write("*CLS")
+        self.write("*ESE 0")
+        self.write("*SRE 0")
+        self.query("*OPC?")
 
     # --- Chiude la comunicazione ---------------------------------------------
     def close(self):
