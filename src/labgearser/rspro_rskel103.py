@@ -173,6 +173,15 @@ class RSProRSKEL103:
     # COMPOSITI E LOGICHE
     # =========================================================================
 
+    # --- Porta lo strumento in uno stato noto --------------------------------
+    def initialize(self):
+        self.load_off()
+        self.write(":CURRent MIN")
+        self.write(":VOLTage MAX")
+        self.write(":RESistance MAX")
+        self.write(":POWer MIN")
+        self.set_mode("CC")
+
     # --- Chiude la comunicazione ---------------------------------------------
     def close(self):
         self.inst.close()
