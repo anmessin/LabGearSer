@@ -152,6 +152,16 @@ class Keysight34460A:
     # COMPOSITI E LOGICHE
     # =========================================================================
 
+    # --- Porta lo strumento in uno stato noto --------------------------------
+    def initialize(self):
+        self.inst.clear()
+        self.reset()
+        self.write("*CLS")
+        self.write("STATus:PRESet")
+        self.write("*ESE 0")
+        self.write("*SRE 0")
+        self.query("*OPC?")
+
     # --- Chiude la comunicazione ---------------------------------------------
     def close(self):
         self.inst.close()
