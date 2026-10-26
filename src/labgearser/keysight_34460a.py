@@ -13,6 +13,7 @@ class Keysight34460A:
             timeout           = timeout,
         )
         self.idn = self.identify()
+        print(f"[INFO]: Connessione {self.idn}")
 
 
     # =========================================================================

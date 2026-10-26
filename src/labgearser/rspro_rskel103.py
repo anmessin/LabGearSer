@@ -18,6 +18,7 @@ class RSProRSKEL103:
             timeout           = timeout,
         )
         self.idn = self.identify()
+        print(f"[INFO]: Connessione {self.idn}")
 
 
     # =========================================================================

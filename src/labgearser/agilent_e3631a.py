@@ -27,6 +27,7 @@ class AgilentE3631A:
         )
         self.remote()
         self.idn = self.identify()
+        print(f"[INFO]: Connessione {self.idn}")
 
 
     # =========================================================================
