@@ -23,8 +23,3 @@ if __name__ == "__main__":
     eld = RSProRSKEL103(ELD_PORT, ELD_BAUDRATE, ELD_TIMEOUT)
     dmm = Keysight34460A(DMM_PORT_1, DMM_TIMEOUT)
     # dmm_2 = Keysight34460A(DMM_PORT_2, DMM_TIMEOUT)
-
-    print(f"Connesso: {psu.idn}")
-    print(f"Connesso: {eld.idn}")
-    print(f"Connesso: {dmm.idn}")
-    # print(f"Connesso: {dmm_2.idn}")
