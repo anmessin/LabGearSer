@@ -52,6 +52,18 @@ class RSProRSKEL103:
     def get_status(self):
         return self.query(":STATus?")
 
+    # --- Attiva il remote sense (non documentato nella guida v2.10) ----------
+    def sense_on(self):
+        self.write(":SYSTem:COMPensate ON")
+
+    # --- Disattiva il remote sense -------------------------------------------
+    def sense_off(self):
+        self.write(":SYSTem:COMPensate OFF")
+
+    # --- Stato del remote sense ----------------------------------------------
+    def get_sense_state(self):
+        return int(self.query(":SYSTem:COMPensate?") == "ON")
+
     # -------------------------------------------------------------------------
     # Gestione carico.
     # -------------------------------------------------------------------------
